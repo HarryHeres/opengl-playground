@@ -4,7 +4,7 @@ project(learning-opengl)
 
 set(OUTPUT_BINARY main)
 
-file(GLOB_RECURSE sources src/*.c src/headers/*.h)
+file(GLOB_RECURSE sources src/*.cpp src/*.c src/headers/*.h src/headers/*.hpp)
 # file(GLOB_RECURSE sources_test src/test/*.cpp)
 # file(GLOB_RECURSE data resources/*)
 
@@ -19,7 +19,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 find_package(OpenGL)
 
 add_executable(${OUTPUT_BINARY} ${sources})
-target_link_libraries(${OUTPUT_BINARY} OpenGL::OpenGL)
+target_link_libraries(${OUTPUT_BINARY} OpenGL::OpenGL glfw)
 
 target_compile_options(${OUTPUT_BINARY} PRIVATE -g -Wall -Wextra -Wfloat-conversion -pedantic) # DEBUG
 # target_compile_options(${OUTPUT_BINARY} PRIVATE -std=c++17 -Wall -Wextra -Wfloat-conversion -pedantic -O3) # RELEASE
