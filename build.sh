@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-cmake .
-make 
+rm -rf build
+cmake . -B build
+cd build && make

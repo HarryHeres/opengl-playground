@@ -9,17 +9,21 @@ file(GLOB_RECURSE sources src/*.cpp src/*.c src/headers/*.h src/headers/*.hpp)
 # file(GLOB_RECURSE data resources/*)
 
 set(CMAKE_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/build)
+set(CMAKE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_OUTPUT_DIR})
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-# if(APPLE)
-#   add_link_options("-Wl,-ld_classic") # This is here due to https://github.com/Homebrew/homebrew-core/issues/145991
-# endif()
+find_package(OpenGL REQUIRED)
 
-find_package(OpenGL)
+include_directories(${CMAKE_INCLUDE_DIR})
 
 add_executable(${OUTPUT_BINARY} ${sources})
-target_link_libraries(${OUTPUT_BINARY} OpenGL::OpenGL glfw)
 
-target_compile_options(${OUTPUT_BINARY} PRIVATE -g -Wall -Wextra -Wfloat-conversion -pedantic) # DEBUG
-# target_compile_options(${OUTPUT_BINARY} PRIVATE -std=c++17 -Wall -Wextra -Wfloat-conversion -pedantic -O3) # RELEASE
+if (APPLE)
+	target_link_libraries(${OUTPUT_BINARY} glfw)
+	target_compile_options(${OUTPUT_BINARY} PRIVATE -g -Wall -Wextra -Wfloat-conversion -pedantic) 
+else ()
+	find_package(glfw REQUIRED)
+	target_link_libraries(${OUTPUT_BINARY} OpenGL glfw)
+	target_compile_options(${OUTPUT_BINARY} PRIVATE -g -Wall -Wextra -Wfloat-conversion -pedantic) 
+endif()
