@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace glfw_utils {
+namespace glfw {
 /* void glfwFramebufferSizeCallback(); */
 void glfwCleanup();
-}  // namespace glfw_utils
+}  // namespace glfw
