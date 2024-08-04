@@ -7,6 +7,24 @@
 
 namespace gl {
 
+void print_gl_shader_error(const std::uint32_t SHADER_ID) noexcept {
+    char info_buffer[GL_STATUS_INFO_BUFFER_SIZE];
+    glGetShaderInfoLog(SHADER_ID, GL_STATUS_INFO_BUFFER_SIZE * sizeof(char),
+                       NULL, info_buffer);
+
+    std::cout << "GL error for object: " << SHADER_ID << ": " << info_buffer
+              << std::endl;
+}
+
+void print_gl_program_error(const std::uint32_t PROGRAM_ID) noexcept {
+    char info_buffer[GL_STATUS_INFO_BUFFER_SIZE];
+    glGetProgramInfoLog(PROGRAM_ID, GL_STATUS_INFO_BUFFER_SIZE * sizeof(char),
+                        NULL, info_buffer);
+
+    std::cout << "GL error for object: " << PROGRAM_ID << ": " << info_buffer
+              << std::endl;
+}
+
 const std::optional<const std::string> load_kernel_from_file(
     const std::string& file_path) noexcept {
     std::string rv;
@@ -37,14 +55,16 @@ const std::optional<const std::string> load_kernel_from_file(
         curr_line.append("\n");
         rv.append(curr_line);
     }
+    rv.append("\0");
 
     return rv;
 }
 
-std::int32_t create_shader(const std::string shader_file_path,
-                           const GLenum shader_type) noexcept {
+std::uint32_t create_shader(const std::string shader_file_path,
+                            const GLenum shader_type) noexcept {
     std::optional<const std::string> rv =
         gl::load_kernel_from_file(shader_file_path);
+
     if (!rv.has_value()) {
         return GL_INVALID_ID;
     }
@@ -58,43 +78,68 @@ std::int32_t create_shader(const std::string shader_file_path,
     uint32_t shader_id = 0;
     shader_id = glCreateShader(shader_type);
 
-    const char* str = kernel_source.c_str();
-    glShaderSource(shader_id, 1, &str, NULL);
+    /* const char* str = kernel_source.c_str(); */
+
+    const char* vertexShaderSource =
+        "#version 330 core\n"
+        "layout (location = 0) in vec3 aPos;\n"
+        "void main()\n"
+        "{\n"
+        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "}\0";
+    const char* fragmentShaderSource =
+        "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main()\n"
+        "{\n"
+        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "}\n\0";
+
+    const char* shaderSource = shader_type == GL_VERTEX_SHADER
+                                   ? vertexShaderSource
+                                   : fragmentShaderSource;
+
+    glShaderSource(shader_id, 1, &shaderSource, NULL);
     glCompileShader(shader_id);
 
     int compile_status = 0;
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compile_status);
     if (compile_status == 0) {
-        char info_buffer[GL_STATUS_INFO_BUFFER_SIZE];
-        glGetShaderInfoLog(shader_id, GL_STATUS_INFO_BUFFER_SIZE * sizeof(char),
-                           NULL, info_buffer);
-        std::cout << "GL fragment shader compilation failure: " << info_buffer
-                  << std::endl;
+        print_gl_shader_error(shader_id);
         return GL_INVALID_ID;
     }
 
     return shader_id;
 }
 
-std::int32_t create_program(const std::vector<std::int32_t>& shaders) noexcept {
-    std::int32_t program_id = 0;
+std::uint32_t create_and_link_program(
+    const std::vector<std::uint32_t>& shaders) noexcept {
+    if (shaders.size() == 0) {
+        std::cout << "Cannot make program with no shaders" << std::endl;
+        return GL_INVALID_ID;
+    }
+
+    std::uint32_t program_id = 0;
     program_id = glCreateProgram();
 
-    for (auto it = shaders.begin(); it != shaders.end(); ++it) {
-        glAttachShader(program_id, *it);
+    if (program_id == GL_INVALID_ID) {
+        std::cout << "Could not create program" << std::endl;
+        return GL_INVALID_ID;
     }
+
+    glAttachShader(program_id, shaders[0]);
+    glAttachShader(program_id, shaders[1]);
+
+    /* for (auto it = shaders.begin(); it != shaders.end(); ++it) { */
+    /*     glAttachShader(program_id, *it); */
+    /* } */
 
     glLinkProgram(program_id);
 
-    int link_status = 0;
+    std::int32_t link_status = 0;
     glGetProgramiv(program_id, GL_LINK_STATUS, &link_status);
-    if (link_status == 0) {
-        char info_buffer[GL_STATUS_INFO_BUFFER_SIZE];
-        glGetProgramInfoLog(program_id,
-                            GL_STATUS_INFO_BUFFER_SIZE * sizeof(char), NULL,
-                            info_buffer);
-        std::cout << "GL fragment shader compilation failure: " << info_buffer
-                  << std::endl;
+    if (link_status == GL_INVALID_ID) {
+        print_gl_program_error(program_id);
         return GL_INVALID_ID;
     }
 
