@@ -78,31 +78,12 @@ std::uint32_t create_shader(const std::string shader_file_path,
     uint32_t shader_id = 0;
     shader_id = glCreateShader(shader_type);
 
-    /* const char* str = kernel_source.c_str(); */
+    const char* str = kernel_source.c_str();
 
-    const char* vertexShaderSource =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-    const char* fragmentShaderSource =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n\0";
-
-    const char* shaderSource = shader_type == GL_VERTEX_SHADER
-                                   ? vertexShaderSource
-                                   : fragmentShaderSource;
-
-    glShaderSource(shader_id, 1, &shaderSource, NULL);
+    glShaderSource(shader_id, 1, &str, NULL);
     glCompileShader(shader_id);
 
-    int compile_status = 0;
+    std::int32_t compile_status = 0;
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compile_status);
     if (compile_status == 0) {
         print_gl_shader_error(shader_id);
@@ -114,8 +95,8 @@ std::uint32_t create_shader(const std::string shader_file_path,
 
 std::uint32_t create_and_link_program(
     const std::vector<std::uint32_t>& shaders) noexcept {
-    if (shaders.size() == 0) {
-        std::cout << "Cannot make program with no shaders" << std::endl;
+    if (shaders.empty()) {
+        std::cout << "Cannot make OpenGL program with no shaders" << std::endl;
         return GL_INVALID_ID;
     }
 
@@ -127,12 +108,9 @@ std::uint32_t create_and_link_program(
         return GL_INVALID_ID;
     }
 
-    glAttachShader(program_id, shaders[0]);
-    glAttachShader(program_id, shaders[1]);
-
-    /* for (auto it = shaders.begin(); it != shaders.end(); ++it) { */
-    /*     glAttachShader(program_id, *it); */
-    /* } */
+    for (auto it = shaders.begin(); it != shaders.end(); ++it) {
+        glAttachShader(program_id, *it);
+    }
 
     glLinkProgram(program_id);
 
