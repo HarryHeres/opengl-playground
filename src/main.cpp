@@ -1,18 +1,18 @@
+#include <cmath>
+#include <vector>
+#include <cstdint>
 #include <iostream>
 
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <glfw_utils.hpp>
+#include <opengl/gl.hpp>
 #include <constants.hpp>
-#include <vector>
-#include <OpenGL/gl.hpp>
+#include <glfw_utils.hpp>
 
 std::uint32_t create_gl_program() {
     const std::uint32_t vertex_shader_id =
-        gl::create_shader("src/Shaders/vertex_shared.glsl", GL_VERTEX_SHADER);
+        gl::create_shader("src/shaders/vertex_shared.glsl", GL_VERTEX_SHADER);
 
     const std::uint32_t fragment_shader_id = gl::create_shader(
-        "src/Shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER);
+        "src/shaders/fragment_shader.glsl", GL_FRAGMENT_SHADER);
 
     const std::vector<std::uint32_t> shaders{vertex_shader_id,
                                              fragment_shader_id};
@@ -145,7 +145,7 @@ int main() {
 
     GLFWwindow* window =
         glfwCreateWindow(gl::GLFW_WINDOW_WIDTH, gl::GLFW_WINDOW_HEIGHT,
-                         "Hello World", NULL, NULL);
+                         "Learning OpenGL", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfw::glfwCleanup();

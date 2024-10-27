@@ -1,8 +1,13 @@
 #pragma once
 
+#ifdef __APPLE_
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 #include <stdint.h>
 #include <cstddef>
-#include <OpenGL/gl.h>
 
 namespace gl {
 const std::size_t GLFW_WINDOW_HEIGHT = 600;

@@ -1,7 +1,7 @@
-#include <OpenGL/gl.hpp>
+#include <opengl/gl.hpp>
+
 #include <fstream>
 #include <iostream>
-#include <GLAD/glad.h>
 #include <constants.hpp>
 #include <vector>
 

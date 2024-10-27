@@ -1,8 +1,10 @@
 #pragma once
 
-#include <OpenGL/OpenGL.h>
+#include <glad/glad.h>
 #include <optional>
 #include <string>
+#include <cstdint>
+#include <vector>
 
 namespace gl {
 
