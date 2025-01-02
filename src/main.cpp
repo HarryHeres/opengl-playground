@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <iostream>
 
-#include <opengl/gl.hpp>
+#include <OpenGL/gl.hpp>
 #include <constants.hpp>
-#include <glfw_utils.hpp>
+#include <GLFW/glfw_utils.hpp>
 
 std::uint32_t create_gl_program() {
     const std::uint32_t vertex_shader_id =

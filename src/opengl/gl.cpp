@@ -1,4 +1,4 @@
-#include <opengl/gl.hpp>
+#include <OpenGL/gl.hpp>
 
 #include <fstream>
 #include <iostream>
