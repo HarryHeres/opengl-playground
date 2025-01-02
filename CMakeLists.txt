@@ -4,7 +4,7 @@ project(learning-opengl)
 
 set(OUTPUT_BINARY main)
 
-file(GLOB_RECURSE sources src/*.cpp src/*.c src/headers/*.h src/headers/*.hpp)
+file(GLOB_RECURSE sources src/*.cpp src/*.c include/*.hpp include/*.h)
 # file(GLOB_RECURSE sources_test src/test/*.cpp)
 # file(GLOB_RECURSE data resources/*)
 
